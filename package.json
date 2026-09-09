@@ -1,0 +1,39 @@
+{
+  "name": "cookielens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cookie Chain wallet insights and conservative empty token account reclaim",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=22.15.0" },
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "audit:public": "node scripts/audit.mjs",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build && npm run audit:public",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@playwright/test": "1.52.0",
+    "@solana/web3.js": "1.98.4",
+    "@types/node": "22.15.3",
+    "@types/react": "18.3.20",
+    "@types/react-dom": "18.3.6",
+    "@vitejs/plugin-react": "4.4.1",
+    "@wallet-standard/app": "1.1.0",
+    "bs58": "6.0.0",
+    "buffer": "6.0.3",
+    "eslint": "9.25.1",
+    "json-bigint": "1.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "typescript": "5.7.3",
+    "typescript-eslint": "8.31.1",
+    "vite": "6.3.5",
+    "vitest": "3.2.4"
+  }
+}
