@@ -46,7 +46,7 @@ export class CookieRpc implements RpcPort {
       const timer = setTimeout(abort, this.timeoutMs);
       try {
         const id = ++this.nextId;
-        const response = await this.fetcher(RPC_URL, {
+        const response = await this.fetcher.call(globalThis, RPC_URL, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),
           signal: controller.signal, credentials: 'omit', cache: 'no-store',

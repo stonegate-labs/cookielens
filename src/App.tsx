@@ -36,6 +36,7 @@ export default function App() {
     abort.current?.abort();
     reclaimer.cancel();
     setData(null); setError(''); setInspected(address); setInput(address);
+    setRefresh(value => value + 1);
   }
   useEffect(() => nightly.subscribe(() => {
     const next = nightly.current();

@@ -20,6 +20,20 @@ describe('RPC transport', () => {
       expect(() => parseRpcJson(body)).toThrow();
     }
   });
+  it.each(['default', 'injected'] as const)('invokes %s fetch with a valid global receiver', async mode => {
+    const fetcher = vi.fn(function (this: unknown, url: string | URL | Request, init?: RequestInit): Promise<Response> {
+      if (this !== globalThis) throw new TypeError('Illegal invocation');
+      expect(url).toBe(RPC_URL);
+      expect(init?.signal).toBeInstanceOf(AbortSignal);
+      return Promise.resolve(response(init, '9'));
+    }) as typeof fetch;
+    vi.stubGlobal('fetch', fetcher);
+    try {
+      const rpc = new CookieRpc(mode === 'default' ? undefined : fetcher, 100, 1);
+      await expect(rpc.call('getBalance')).resolves.toBe('9');
+      expect(fetcher).toHaveBeenCalledTimes(1);
+    } finally { vi.unstubAllGlobals(); }
+  });
   it('uses only the explicit Cookie Chain endpoint with bounded rate-limit retries', async () => {
     let calls = 0;
     const fetcher = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {

@@ -139,3 +139,28 @@ test('overview, activity, chart and reclaim preview fit both configured widths',
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('reclaim-preview.png'), fullPage: true });
 });
+test('inspecting the same public address again loads fresh data and remains read-only', async ({ page }) => {
+  const control = await mockRpc(page); await page.goto('/'); await inspect(page);
+  await expect(page.getByText('1234567890 base units', { exact: true })).toBeVisible();
+  const calls = control.calls;
+  control.balance = '2000000000';
+  await page.getByRole('button', { name: 'Inspect address', exact: true }).click();
+  await expect(page.getByText('2000000000 base units', { exact: true })).toBeVisible();
+  await expect(page.getByText('1234567890 base units', { exact: true })).toHaveCount(0);
+  expect(control.calls).toBeGreaterThan(calls);
+  await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Review reclaim' })).toHaveCount(0);
+});
+test('repeat inspection of the connected wallet cancels its unsigned preview and reloads', async ({ page }) => {
+  const control = await mockRpc(page); await mockNightly(page); await page.goto('/');
+  await page.getByRole('button', { name: 'Connect Nightly' }).click();
+  await page.getByRole('button', { name: 'Review reclaim' }).click();
+  await expect(page.getByText('Gross refundable COOK', { exact: true })).toBeVisible();
+  control.balance = '3000000000';
+  await page.getByRole('button', { name: 'Inspect address', exact: true }).click();
+  await expect(page.getByText('Gross refundable COOK', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Confirm and request Nightly approval' })).toHaveCount(0);
+  await expect(page.getByText('3000000000 base units', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Review reclaim' })).toBeEnabled();
+  expect(await page.locator('html').getAttribute('data-sign-calls')).toBeNull();
+});

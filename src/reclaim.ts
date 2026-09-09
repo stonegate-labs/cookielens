@@ -1,6 +1,5 @@
 import { Transaction } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { Buffer } from 'buffer';
 import type { RpcPort } from '../integrations/rpc';
 import type { WalletPort, WalletSnapshot } from '../integrations/nightly';
 import { publicAddress, transactionSignature } from '../integrations/explorer';
