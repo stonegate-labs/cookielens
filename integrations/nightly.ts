@@ -26,6 +26,14 @@ function addressOf(value: unknown): string | null {
   return null;
 }
 
+const COOKIE_RPC = 'https://rpc.cookiescan.io';
+function providerAddress(provider: ObjectLike): string | null {
+  if (provider.isConnected === false) return null;
+  const accounts = provider.accounts;
+  const address = (Array.isArray(accounts) ? addressOf(accounts[0]) : null) ?? addressOf(provider.publicKey);
+  return address === '11111111111111111111111111111111' ? null : address;
+}
+
 export class NightlyWallet implements WalletPort {
   private connected: WalletSnapshot | null = null;
   private revision = 0;
@@ -36,6 +44,7 @@ export class NightlyWallet implements WalletPort {
   private cleanup: (() => void) | null = null;
   private poll: ReturnType<typeof setInterval> | null = null;
   private connecting = false;
+  private switching = false;
   private standards(): ObjectLike[] {
     return getWallets().get().filter(wallet => wallet.name.toLowerCase() === 'nightly').map(wallet => object(wallet));
   }
@@ -52,7 +61,7 @@ export class NightlyWallet implements WalletPort {
   }
   current(): WalletSnapshot | null {
     if (this.provider && this.connected) {
-      try { this.update(this.provider.isConnected === false ? null : addressOf(this.provider.publicKey)); }
+      try { const address = providerAddress(this.provider); if (address || !this.switching) this.update(address); }
       catch { this.update(null); }
     }
     return this.connected ? { ...this.connected } : null;
@@ -90,37 +99,43 @@ export class NightlyWallet implements WalletPort {
         this.update(selectedAddress);
         return;
       }
-      const provider = this.injected();
-      if (!Object.keys(provider).length) throw new Error(standards.length ? 'Installed Nightly has an unsupported signing interface. Update Nightly and retry.' : 'Nightly is not installed. Install Nightly, configure Cookie Chain, then reload.');
-      if (!callable(provider.connect) || !callable(provider.disconnect) || !callable(provider.signTransaction)
-          || (!callable(provider.on) && typeof provider.isConnected !== 'boolean')) {
-        throw new Error('Installed Nightly cannot provide signing and account-change detection. Update Nightly and retry.');
-      }
-      const result = await invoke(provider, 'connect');
-      this.provider = provider;
-      const selectedAddress = addressOf(provider.publicKey) ?? addressOf(result);
-      if (!selectedAddress) throw new Error('Nightly did not return a public account.');
-      if (callable(provider.on)) {
-        const changed = (key: unknown) => {
-          try { this.update(key === null ? null : addressOf(key) ?? addressOf(provider.publicKey)); }
-          catch { this.update(null); }
-        };
-        const disconnected = () => this.update(null);
-        await invoke(provider, 'on', 'accountChanged', changed);
-        await invoke(provider, 'on', 'disconnect', disconnected);
-        this.cleanup = () => {
-          if (callable(provider.removeListener)) {
-            provider.removeListener.apply(provider, ['accountChanged', changed]);
-            provider.removeListener.apply(provider, ['disconnect', disconnected]);
-          }
-        };
-      }
-      this.update(selectedAddress);
-      this.poll = setInterval(() => { this.current(); }, 500);
+      await this.connectInjected();
     } catch (error) {
       this.release(); this.update(null);
       throw error instanceof Error ? error : new Error('Nightly connection was rejected or unavailable.');
     } finally { this.connecting = false; }
+  }
+  private async connectInjected(): Promise<void> {
+    const provider = this.injected();
+    if (!Object.keys(provider).length) throw new Error('Nightly is not installed. Install Nightly, configure Cookie Chain, then reload.');
+    if (!callable(provider.connect) || !callable(provider.disconnect) || !callable(provider.signTransaction)
+        || (!callable(provider.on) && !('accounts' in provider) && !('publicKey' in provider))) {
+      throw new Error('Installed Nightly cannot provide signing and account-change detection. Update Nightly and retry.');
+    }
+    await invoke(provider, 'connect');
+    this.provider = provider;
+    const selectedAddress = providerAddress(provider);
+    if (!selectedAddress) throw new Error('Nightly did not return a public account.');
+    if (callable(provider.on)) {
+      const changed = (key: unknown) => {
+        try {
+          const address = key === null ? null : providerAddress(provider);
+          if (address || !this.switching) this.update(address);
+        }
+        catch { this.update(null); }
+      };
+      const disconnected = () => { if (!this.switching) this.update(null); };
+      await invoke(provider, 'on', 'accountChanged', changed);
+      await invoke(provider, 'on', 'disconnect', disconnected);
+      this.cleanup = () => {
+        if (callable(provider.removeListener)) {
+          provider.removeListener.apply(provider, ['accountChanged', changed]);
+          provider.removeListener.apply(provider, ['disconnect', disconnected]);
+        }
+      };
+    }
+    this.update(selectedAddress);
+    this.poll = setInterval(() => { this.current(); }, 500);
   }
   private release(): void {
     if (this.poll) clearInterval(this.poll);
@@ -141,19 +156,44 @@ export class NightlyWallet implements WalletPort {
       const account = object(this.account);
       if (!Array.isArray(account.chains) || !account.chains.includes(chain)
           || !Array.isArray(account.features) || !account.features.includes('solana:signTransaction')) {
-        throw new Error('Nightly does not advertise transaction signing for the verified Cookie Chain identity. Configure Cookie Chain or use a supported Nightly interface.');
+        this.release();
+        try { await this.connectInjected(); }
+        catch (error) { this.release(); this.update(null); throw error; }
+      } else {
+        const feature = object(this.standard.features)['solana:signTransaction'];
+        const output = await invoke(feature, 'signTransaction', {
+          account: this.account, chain,
+          transaction: new Uint8Array(transaction.serialize({ requireAllSignatures: false, verifySignatures: false })),
+        });
+        const signed = Array.isArray(output) ? object(output[0]).signedTransaction : undefined;
+        if (!(signed instanceof Uint8Array)) throw new Error('Nightly returned an unsupported signed transaction.');
+        return signed;
       }
-      const feature = object(this.standard.features)['solana:signTransaction'];
-      const output = await invoke(feature, 'signTransaction', {
-        account: this.account, chain,
-        transaction: new Uint8Array(transaction.serialize({ requireAllSignatures: false, verifySignatures: false })),
-      });
-      const signed = Array.isArray(output) ? object(output[0]).signedTransaction : undefined;
-      if (!(signed instanceof Uint8Array)) throw new Error('Nightly returned an unsupported signed transaction.');
-      return signed;
     }
     if (!this.provider) throw new Error('Nightly signing interface unavailable.');
-    const result = await invoke(this.provider, 'signTransaction', transaction);
+    const provider = this.provider;
+    const validate = () => {
+      const active = this.current();
+      if (this.provider !== provider || !active || active.address !== current.address || active.revision !== current.revision) {
+        throw new Error('Nightly active account changed. Review the transaction again.');
+      }
+    };
+    validate();
+    if (object(provider.chainInfo).provider !== COOKIE_RPC) {
+      this.switching = true;
+      try {
+        await invoke(provider, 'changeNetwork', { url: COOKIE_RPC });
+        // Nightly can temporarily clear its account while loading the network.
+        if (!providerAddress(provider)) await invoke(provider, 'connect');
+      } finally {
+        this.switching = false;
+        this.current();
+      }
+    }
+    validate();
+    if (object(provider.chainInfo).provider !== COOKIE_RPC) throw new Error('Nightly did not switch to the Cookie RPC.');
+    const result = await invoke(provider, 'signTransaction', transaction);
+    validate();
     if (result instanceof Transaction) return new Uint8Array(result.serialize());
     const signed = await invoke(result, 'serialize');
     if (!(signed instanceof Uint8Array)) throw new Error('Nightly returned an unsupported signed transaction.');
