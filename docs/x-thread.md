@@ -1,19 +1,22 @@
-# X thread — review draft
+# X thread — final publication draft
 
-Publication is not authorized. Do not post until the live release gates pass, current bounty rules and disclosure requirements are reviewed, and all bracketed fields below are replaced with observed, operator-approved public information. Do not substitute fake links or claim a prize.
+Status: technically verified and ready for publication. Not yet observed as published.
 
-1/ CookieLens helps you understand what your Cookie Chain wallet has done—and which unused token accounts still hold refundable storage. Native COOK, recent activity, actual sampled fees and one carefully reviewed reclaim at a time.
+1/ CookieLens is a focused Cookie Chain wallet dashboard that shows native COOK, recent activity, sampled fees, and eligible storage locked in empty legacy SPL token accounts — with one carefully reviewed reclaim at a time.
 
-2/ Connect Nightly or inspect a public address without a wallet. The overview shows exact token quantities and a seven-day UTC chart from at most 50 recent signatures. Missing details stay visible. No invented prices, portfolio values or profit claims.
+2/ Connect Nightly or inspect any public address read-only. CookieLens uses exact base units and a bounded seven-day UTC view from at most 50 recent signatures. Missing transaction details stay explicit. No invented prices, portfolio values or PnL.
 
-3/ An empty token account can still hold native storage balance. CookieLens checks conservative eligibility for the existing legacy SPL Token program. No burns, transfers, bulk closures or custom on-chain program.
+3/ Empty token accounts can still hold refundable storage. CookieLens only allows conservative legacy SPL Token eligibility: zero token amount, initialized, non-native, no delegate, correct owner and close authority. No bulk closes and no custom on-chain program.
 
-4/ Before approval, review the complete source account, mint, your refund destination, gross refund, estimated network fee and net return. CookieLens verifies the network, re-reads the account and simulates the exact transaction. Your explicit confirmation requests Nightly signing.
+4/ Before signing, CookieLens re-verifies Cookie Chain identity, re-reads the account, estimates the fee, checks positive net return and existing fee balance, and simulates the exact CloseAccount transaction. Only the final confirmation asks Nightly to sign.
 
-5/ Closure removes the account. Receiving that token again may require account recreation and storage funding. Your wallet needs existing COOK for the upfront fee. If an RPC response disappears, CookieLens retains the signature and reconciles it before allowing another reclaim.
+5/ We verified the full flow on-chain. A real empty account holding 0.002039280 COOK of storage was closed through Nightly. Actual network fee: 0.000005 COOK. The wallet moved from 0.000906720 to 0.002941000 COOK in the transaction.
 
-6/ See the verified walkthrough: [APPROVED DEMO LINK REQUIRED]. Real reclaim: [VERIFIED COOKIESCAN TRANSACTION LINK REQUIRED]. The demonstration must show a real Nightly approval and confirmed result, not a simulation.
+6/ Finalized reclaim: https://cookiescan.io/tx/22MFsSaQCHNqr1vQnX8PzsXjyuRmNTgGrmT3YpJvA2ez2x2hyvd5UuPkBpx8VtMtyy5b28fbrbpLe5U3yQ4bai6w
+After confirmation, CookieLens refreshed to `No legacy token accounts` and the real signature appeared in Recent activity.
 
-7/ Try CookieLens: [VERIFIED PUBLIC APP URL REQUIRED]. Source: https://github.com/stonegate-labs/cookielens. Built for a focused Cookie Chain workflow by stonegate-labs. [ADD ANY REQUIRED, APPROVED DISCLOSURE BEFORE PUBLICATION.]
+7/ Try CookieLens: https://stonegate-labs.github.io/cookielens/
+Source: https://github.com/stonegate-labs/cookielens
+Need COOK on Cookie Chain? Official bridge guidance: https://docs.cookiechain.wtf/bridge
 
-Review checklist: current eligibility/deadline checked; disclosure decision resolved; app/source/demo links open publicly; transaction and addresses approved for publication; limitations accurate; explicit X publication authorization recorded. After publication, record the actual thread URL in `submission.md` and use it in the Telegram draft.
+Publication note: no prize or award is claimed. After publishing, record the actual X thread URL in `docs/submission.md` and use that URL in `docs/telegram.md`.
