@@ -1,6 +1,6 @@
 # X thread — final publication draft
 
-Status: technically verified and ready for publication. Not yet observed as published.
+Status: published and verified. Thread URL: https://x.com/Alaric1689337/status/2098255414941143426. Posts 1/ through 7/ were each observed exactly once on @Alaric1689337; no duplicate thread was observed.
 
 1/ CookieLens is a focused Cookie Chain wallet dashboard that shows native COOK, recent activity, sampled fees, and eligible storage locked in empty legacy SPL token accounts — with one carefully reviewed reclaim at a time.
 
@@ -19,4 +19,4 @@ After confirmation, CookieLens refreshed to `No legacy token accounts` and the r
 Source: https://github.com/stonegate-labs/cookielens
 Need COOK on Cookie Chain? Official bridge guidance: https://docs.cookiechain.wtf/bridge
 
-Publication note: no prize or award is claimed. After publishing, record the actual X thread URL in `docs/submission.md` and use that URL in `docs/telegram.md`.
+Publication evidence: https://x.com/Alaric1689337/status/2098255414941143426. No prize or award is claimed.

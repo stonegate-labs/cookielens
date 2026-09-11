@@ -32,7 +32,7 @@ No special authorship/tooling disclosure requirement was visible in the reviewed
 | Public artifact hygiene | PASS | Public text/bundle audit passed; no signing material or secret data committed. |
 | Open-source setup | PASS | Public GitHub repository, MIT license, README/setup documentation present. |
 | Public delivery | PASS | Public HTTPS GitHub Pages deployment and external browser inspection passed. |
-| Submission/social package | PARTIAL | Submission evidence is ready; X publication, Telegram sharing and final Superteam submission are not yet observed. |
+| Submission/social package | PASS WITH MODERATION CAVEAT | Superteam submission is sent and remains editable; the seven-post X thread is published; bot-verified Telegram accepted the pure-text project announcement, while messages containing direct URLs are automatically removed by community moderation. |
 
 ## Published application and test identity
 
@@ -77,6 +77,10 @@ The final fee-buffer top-up source transaction was `5YkTb4axJX3xq1D4dg2gVfpYoJZz
 
 No seed phrase, private key, raw signed transaction or approval secret is included in the public evidence.
 
-## Remaining external delivery actions
+## External delivery completion
 
-The technical release and real reclaim acceptance are complete. The Superteam submission itself has not yet been observed as sent. X-thread publication and Telegram sharing are also not yet observed. No prize, winner or payment outcome is claimed.
+Technical release, real reclaim acceptance, Superteam submission and X-thread publication are complete. The Superteam listing shows `Edit Submission`, and its Tweet Link was X-verified and saved as https://x.com/Alaric1689337/status/2098255414941143426.
+
+Telegram bot identity verification passed and the official Cookie Chain community accepted the pure-text CookieLens announcement. Messages containing the direct X/App/GitHub URLs were automatically removed by community moderation, so the evidence records that limitation rather than claiming a persistent Telegram link. No further link retries were made.
+
+No prize, winner or payment outcome is claimed; those remain monitoring-stage events.

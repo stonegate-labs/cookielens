@@ -1,6 +1,6 @@
 # CookieLens submission record
 
-Status: technical delivery complete; Superteam submission not yet observed as sent. X publication and Cookie Chain Telegram sharing remain pending external publication actions.
+Status: delivery complete. The Superteam submission is sent and remains editable; the X thread is published; Telegram bot verification passed and the official community accepted the pure-text CookieLens announcement. Direct-link Telegram messages are automatically removed by community moderation. Judging, winner and payment outcomes remain pending.
 
 | Submission field | Value |
 | --- | --- |
@@ -21,8 +21,10 @@ Status: technical delivery complete; Superteam submission not yet observed as se
 | Actual reclaim fee | `5,000` base units = `0.000005 COOK` |
 | Reclaim wallet balance | `0.000906720 -> 0.002941000 COOK` in indexed transaction balances |
 | Closed account verification | absent at finalized context slot `24427477` |
-| Published X thread URL | Pending; no publication observed yet |
-| Telegram sharing result | Pending; no sharing observed yet |
+| Published X thread URL | https://x.com/Alaric1689337/status/2098255414941143426 — seven-post thread, 1/ through 7/ each observed once, no duplicate chain |
+| Superteam submission status | Submitted; listing shows `Edit Submission` |
+| Superteam Tweet Link | https://x.com/Alaric1689337/status/2098255414941143426 — X profile verified through Superteam OAuth and saved |
+| Telegram sharing result | Bot verification passed; pure-text CookieLens announcement posted successfully in the official community. Messages containing direct URLs were automatically deleted by community moderation, so no persistent Telegram X-link claim is made. |
 
 ## Current bounty review
 
@@ -48,9 +50,9 @@ The public text reviewed did not expose one unambiguous absolute submission time
 - [x] Closed source account was absent at a later finalized context slot.
 - [x] Refreshed production inventory removed the account and Recent activity included the real signature.
 - [x] Demo/setup documentation exists in the repository.
-- [ ] X thread publication observed.
-- [ ] Cookie Chain Telegram sharing observed.
-- [ ] Superteam submission observed as created/sent.
+- [x] X thread publication observed: https://x.com/Alaric1689337/status/2098255414941143426.
+- [x] Cookie Chain Telegram pure-text project announcement observed after bot verification; direct URL posts were automatically removed by community moderation.
+- [x] Superteam submission observed as created/sent; listing shows `Edit Submission`, and the verified X Tweet Link is saved.
 - [ ] Winner/prize/payment outcome observed.
 
 ## Limitations to disclose
